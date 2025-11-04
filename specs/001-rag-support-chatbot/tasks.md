@@ -97,10 +97,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Update system prompt in src/streamlit_app.py to handle low-confidence scenarios and communicate limitations
-- [ ] T024 [US3] Implement similarity threshold checking in src/streamlit_app.py to detect when no relevant documents found (all results <0.7)
-- [ ] T025 [US3] Add fallback responses in src/streamlit_app.py for no-match scenarios offering to create ticket or contact human
-- [ ] T026 [US3] Implement ambiguity detection in src/streamlit_app.py to trigger clarifying questions when query unclear
+- [X] T023 [US3] Update system prompt in src/streamlit_app.py to handle low-confidence scenarios and communicate limitations
+- [X] T024 [US3] Implement similarity threshold checking in src/streamlit_app.py to detect when no relevant documents found (all results <0.7)
+- [X] T025 [US3] Add fallback responses in src/streamlit_app.py for no-match scenarios offering to create ticket or contact human
+- [X] T026 [US3] Implement ambiguity detection in src/streamlit_app.py to trigger clarifying questions when query unclear
 
 **Checkpoint**: All basic chatbot functionality complete - Q&A, conversations, and graceful failures working
 

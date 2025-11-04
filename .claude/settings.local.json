@@ -122,7 +122,8 @@
       "WebFetch(domain:dev.to)",
       "Bash(.specify/scripts/bash/update-agent-context.sh:*)",
       "Bash(git rev-parse:*)",
-      "Bash(uvx ty check:*)"
+      "Bash(uvx ty check:*)",
+      "Bash(git -C /Users/iorlas/Projects/my/pocs/customer_support status --short)"
     ],
     "deny": [],
     "ask": []
