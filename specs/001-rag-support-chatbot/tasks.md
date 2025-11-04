@@ -80,10 +80,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Update PydanticAI agent in src/streamlit_app.py to include conversation history in LLM prompts
-- [ ] T020 [US2] Implement context window management in src/streamlit_app.py to limit message history to reasonable token count
-- [ ] T021 [US2] Add conversation context to RAG retrieval in src/streamlit_app.py to improve query understanding
-- [ ] T022 [US2] Test multi-turn conversation flows and verify context preservation across turns
+- [X] T019 [US2] Update PydanticAI agent in src/streamlit_app.py to include conversation history in LLM prompts
+- [X] T020 [US2] Implement context window management in src/streamlit_app.py to limit message history to reasonable token count
+- [X] T021 [US2] Add conversation context to RAG retrieval in src/streamlit_app.py to improve query understanding
+- [X] T022 [US2] Test multi-turn conversation flows and verify context preservation across turns
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - basic Q&A and multi-turn conversations both functional
 

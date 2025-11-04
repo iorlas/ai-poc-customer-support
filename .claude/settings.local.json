@@ -121,7 +121,8 @@
       "WebFetch(domain:docs.chonkie.ai)",
       "WebFetch(domain:dev.to)",
       "Bash(.specify/scripts/bash/update-agent-context.sh:*)",
-      "Bash(git rev-parse:*)"
+      "Bash(git rev-parse:*)",
+      "Bash(uvx ty check:*)"
     ],
     "deny": [],
     "ask": []
