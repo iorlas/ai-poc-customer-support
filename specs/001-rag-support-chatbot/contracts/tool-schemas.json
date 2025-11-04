@@ -1,0 +1,151 @@
+{
+  "tool_schemas": {
+    "submit_ticket": {
+      "type": "function",
+      "function": {
+        "name": "submit_ticket",
+        "description": "Submit a support ticket for issues requiring human assistance. Use this when the knowledge base cannot answer the question or the user explicitly requests to create a ticket or talk to a human.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The customer's issue or question that requires human assistance"
+            },
+            "include_conversation": {
+              "type": "boolean",
+              "description": "Whether to include the current conversation context in the ticket",
+              "default": true
+            }
+          },
+          "required": ["message"]
+        }
+      }
+    },
+    "find_ticket": {
+      "type": "function",
+      "function": {
+        "name": "find_ticket",
+        "description": "Find existing support tickets by ticket ID or search by content. Use this when the user asks to view their tickets, search for a specific ticket, or check ticket status.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query - can be a ticket ID (UUID format) or keywords to search in ticket messages"
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    }
+  },
+  "tool_responses": {
+    "submit_ticket": {
+      "success": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Unique ticket identifier (UUID4 format)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Ticket creation time (ISO8601)",
+            "example": "2025-11-04T12:34:56Z"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["open"],
+            "description": "Ticket status (always 'open' in POC)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Confirmation message to display to user",
+            "example": "Ticket 123e4567-e89b-12d3-a456-426614174000 created successfully. A human agent will review your request."
+          }
+        },
+        "required": ["ticket_id", "timestamp", "status", "message"]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message (fail-fast: no error handling in POC, will raise exception)"
+          }
+        }
+      }
+    },
+    "find_ticket": {
+      "success": {
+        "type": "object",
+        "properties": {
+          "tickets": {
+            "type": "array",
+            "description": "List of matching tickets",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ticket_id": {
+                  "type": "string",
+                  "description": "Ticket UUID"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "description": "Creation timestamp (ISO8601)"
+                },
+                "customer_message": {
+                  "type": "string",
+                  "description": "Original customer message"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["open"],
+                  "description": "Ticket status"
+                },
+                "conversation_context": {
+                  "type": "array",
+                  "description": "Optional conversation history",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role": {
+                        "type": "string",
+                        "enum": ["user", "assistant"]
+                      },
+                      "content": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": ["ticket_id", "timestamp", "customer_message", "status"]
+            }
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of tickets found"
+          },
+          "message": {
+            "type": "string",
+            "description": "Summary message to display to user",
+            "example": "Found 2 tickets matching your query"
+          }
+        },
+        "required": ["tickets", "count", "message"]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message (fail-fast: no error handling in POC, will raise exception)"
+          }
+        }
+      }
+    }
+  }
+}

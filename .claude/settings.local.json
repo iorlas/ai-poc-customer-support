@@ -112,7 +112,16 @@
       "WebFetch(domain:deepeshsoni.com)",
       "WebFetch(domain:hacker-news.firebaseio.com)",
       "WebFetch(domain:pypi.org)",
-      "Bash(git -C /Users/iorlas/Projects/my/ailabbrains rm:*)"
+      "Bash(git -C /Users/iorlas/Projects/my/ailabbrains rm:*)",
+      "Bash(git fetch:*)",
+      "Bash(.specify/scripts/bash/create-new-feature.sh:*)",
+      "Bash(.specify/scripts/bash/setup-plan.sh:*)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "WebFetch(domain:datapipes.chromadb.dev)",
+      "WebFetch(domain:docs.chonkie.ai)",
+      "WebFetch(domain:dev.to)",
+      "Bash(.specify/scripts/bash/update-agent-context.sh:*)",
+      "Bash(git rev-parse:*)"
     ],
     "deny": [],
     "ask": []

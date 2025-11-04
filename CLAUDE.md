@@ -110,3 +110,6 @@ Test configuration in `pyproject.toml` enforces strict marker usage.
 - Build targets wheel packages from `src/` directory
 - Artifacts stored in `artifacts/`, `mlruns/` (gitignored)
 - Dagster home in `.dagster/` (gitignored)
+
+## Recent Changes
+- 001-rag-support-chatbot: Added Python 3.12+
