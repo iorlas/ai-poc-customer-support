@@ -6,7 +6,7 @@ from pathlib import Path
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 import streamlit as st
-from pydantic_ai import Agent, ModelMessage
+from pydantic_ai import Agent
 
 # Add project root to path for imports (required for Streamlit standalone execution)
 project_root = Path(__file__).parent.parent
@@ -15,6 +15,7 @@ if str(project_root) not in sys.path:
 
 from src.config import settings  # noqa: E402
 from src.logging_config import get_logger, setup_logging  # noqa: E402
+from src.ticket_manager import find_ticket, submit_ticket  # noqa: E402
 from src.vector_store import query_documents  # noqa: E402
 
 setup_logging()
@@ -26,7 +27,7 @@ os.environ["OPENAI_BASE_URL"] = settings.openai_base_url
 
 
 # History processor: Keep only last 10 turns (20 messages) for short-term memory
-def keep_recent_messages(messages: list[ModelMessage]) -> list[ModelMessage]:
+def keep_recent_messages(messages: list) -> list:
     """Keep only the last 10 conversation turns (20 messages) to manage token usage.
 
     This implements short-term memory by limiting context window.
@@ -49,7 +50,7 @@ IMPORTANT GUIDELINES FOR LOW-CONFIDENCE SCENARIOS:
 1. **When Knowledge Base Has No Relevant Information:**
    - Clearly state: "I couldn't find specific information about that in our knowledge base."
    - DO NOT fabricate or guess answers
-   - Offer to create a support ticket for human assistance
+   - Offer to create a support ticket for human assistance using the submit_support_ticket tool
    - Example: "I don't have information about that in my current knowledge base.
      Would you like me to create a support ticket so a human agent can help you?"
 
@@ -68,9 +69,74 @@ IMPORTANT GUIDELINES FOR LOW-CONFIDENCE SCENARIOS:
    - Reference the knowledge base when answers are found
    - Maintain a professional and friendly tone
    - Always prioritize accuracy over completeness
-   - Never make up information to fill gaps""",
+   - Never make up information to fill gaps
+
+TOOL USAGE GUIDELINES:
+
+5. **When to Use submit_support_ticket Tool:**
+   - User explicitly asks to create a ticket or speak to a human agent
+   - You cannot find relevant information in the knowledge base (low similarity scores)
+   - User's issue requires human intervention or is outside your knowledge scope
+   - User expresses frustration or urgency that needs escalation
+
+6. **When to Use find_support_ticket Tool:**
+   - User asks to view their tickets, check ticket status, or search for tickets
+   - User provides a ticket ID (UUID format) to look up
+   - User asks "what tickets do I have?" or similar queries
+   - User wants to reference a previous ticket or issue""",
     history_processors=[keep_recent_messages],  # Automatic short-term memory management
 )
+
+
+# Register tools as plain functions (PydanticAI will handle schema generation)
+@agent.tool_plain
+def submit_support_ticket(message: str) -> str:
+    """Submit a support ticket for issues requiring human assistance.
+
+    Use this when the knowledge base cannot answer the question or the user
+    explicitly requests to create a ticket or talk to a human.
+
+    Args:
+        message: The customer's issue or question that requires human assistance
+
+    Returns:
+        Confirmation message with ticket ID
+    """
+    result = submit_ticket(message, conversation_context=None)
+    logger.info("Tool called: submit_ticket", ticket_id=result["ticket_id"])
+    return result["message"]
+
+
+@agent.tool_plain
+def find_support_ticket(query: str) -> str:
+    """Find existing support tickets by ticket ID or search by content.
+
+    Use this when the user asks to view their tickets, search for a specific
+    ticket, or check ticket status.
+
+    Args:
+        query: Search query - can be a ticket ID (UUID) or keywords to search
+
+    Returns:
+        Summary message with ticket information
+    """
+    result = find_ticket(query)
+    logger.info("Tool called: find_ticket", query=query, matches=result["count"])
+
+    if result["count"] == 0:
+        return result["message"]
+
+    # Format detailed ticket info
+    response_lines = [result["message"], ""]
+    for ticket in result["tickets"]:
+        response_lines.append(f"Ticket ID: {ticket['ticket_id']}")
+        response_lines.append(f"Created: {ticket['timestamp']}")
+        response_lines.append(f"Message: {ticket['customer_message']}")
+        response_lines.append(f"Status: {ticket['status']}")
+        response_lines.append("")
+
+    return "\n".join(response_lines)
+
 
 # Streamlit app configuration
 st.set_page_config(page_title="Customer Support Chatbot", page_icon="🤖", layout="wide")
@@ -83,28 +149,26 @@ if "agent_history" not in st.session_state:
     st.session_state.agent_history = []  # PydanticAI message history (ModelMessage objects)
     logger.info("Initialized new chat session")
 
-# Display conversation history from agent_history
-# Extract user and assistant messages from ModelMessage objects
-for msg in st.session_state.agent_history:
-    # ModelRequest contains user prompts, ModelResponse contains assistant replies
-    if hasattr(msg, "parts"):
-        for part in msg.parts:
-            # UserPromptPart = user message, TextPart = assistant message
-            if part.__class__.__name__ == "UserPromptPart":
-                with st.chat_message("user"):
-                    st.write(part.content)
-            elif part.__class__.__name__ == "TextPart":
-                with st.chat_message("assistant"):
-                    st.write(part.content)
+# Initialize display messages (user-facing only, no internal prompts)
+if "display_messages" not in st.session_state:
+    st.session_state.display_messages = []  # List of {"role": str, "content": str}
+
+# Display conversation history (user-facing messages only)
+for msg in st.session_state.display_messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
 
 # User input
 if prompt := st.chat_input("Ask a question..."):
+    # Add user message to display history
+    st.session_state.display_messages.append({"role": "user", "content": prompt})
+
     # Display user message immediately
     with st.chat_message("user"):
         st.write(prompt)
 
-    logger.info("Processing user query", query=prompt, conversation_turns=len(st.session_state.agent_history) // 2)
+    logger.info("Processing user query", query=prompt, conversation_turns=len(st.session_state.display_messages) // 2)
 
     # Generate assistant response with spinner
     with st.chat_message("assistant"):
@@ -201,6 +265,9 @@ Respond with empathy and helpfulness while being honest about the limitation."""
             except Exception as e:
                 response = f"Sorry, I encountered an error: {str(e)}"
                 logger.error("Error generating response", error=str(e), query=prompt)
+
+        # Add assistant response to display history
+        st.session_state.display_messages.append({"role": "assistant", "content": response})
 
         # Display response in placeholder
         message_placeholder.write(response)

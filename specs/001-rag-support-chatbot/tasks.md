@@ -114,15 +114,15 @@
 
 ### Implementation for User Story 4
 
-- [ ] T027 [P] [US4] Create ticket_manager.py in src/ with SupportTicket Pydantic model (ticket_id, timestamp, customer_message, status, conversation_context)
-- [ ] T028 [P] [US4] Implement submit_ticket() function in src/ticket_manager.py with UUID4 ticket_id generation and JSON Lines append
-- [ ] T029 [US4] Implement find_ticket(query: str) function in src/ticket_manager.py with ID matching and content search
-- [ ] T030 [US4] Integrate PydanticAI @agent.tool decorator for submit_ticket in src/streamlit_app.py per contracts/tool-schemas.json
-- [ ] T031 [US4] Integrate PydanticAI @agent.tool decorator for find_ticket in src/streamlit_app.py per contracts/tool-schemas.json
-- [ ] T032 [US4] Update system prompt in src/streamlit_app.py to guide LLM when to invoke submit_ticket (low similarity, explicit request)
-- [ ] T033 [US4] Update system prompt in src/streamlit_app.py to guide LLM when to invoke find_ticket (user asks to view/search tickets)
-- [ ] T034 [US4] Test tool calling workflow: verify submit_ticket creates tickets.jsonl entry with correct schema
-- [ ] T035 [US4] Test tool calling workflow: verify find_ticket searches tickets by ID and content successfully
+- [X] T027 [P] [US4] Create ticket_manager.py in src/ with SupportTicket Pydantic model (ticket_id, timestamp, customer_message, status, conversation_context)
+- [X] T028 [P] [US4] Implement submit_ticket() function in src/ticket_manager.py with UUID4 ticket_id generation and JSON Lines append
+- [X] T029 [US4] Implement find_ticket(query: str) function in src/ticket_manager.py with ID matching and content search
+- [X] T030 [US4] Integrate PydanticAI @agent.tool decorator for submit_ticket in src/streamlit_app.py per contracts/tool-schemas.json
+- [X] T031 [US4] Integrate PydanticAI @agent.tool decorator for find_ticket in src/streamlit_app.py per contracts/tool-schemas.json
+- [X] T032 [US4] Update system prompt in src/streamlit_app.py to guide LLM when to invoke submit_ticket (low similarity, explicit request)
+- [X] T033 [US4] Update system prompt in src/streamlit_app.py to guide LLM when to invoke find_ticket (user asks to view/search tickets)
+- [X] T034 [US4] Test tool calling workflow: verify submit_ticket creates tickets.jsonl entry with correct schema
+- [X] T035 [US4] Test tool calling workflow: verify find_ticket searches tickets by ID and content successfully
 
 **Checkpoint**: All user stories complete - full chatbot functionality with ticketing system operational
 
