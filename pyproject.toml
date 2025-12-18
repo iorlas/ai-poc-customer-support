@@ -24,6 +24,9 @@ dependencies = [
     "chonkie[tiktoken]>=0.5.0",
     "sentence-transformers>=2.2.0",
     "pypdf>=3.17.0",
+    "trafilatura>=2.0.0",
+    "playwright>=1.57.0",
+    "patchright>=1.56.0",
 ]
 
 [dependency-groups]

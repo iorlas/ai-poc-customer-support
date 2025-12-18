@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(uv run python:*)",
+      "Bash(uv add:*)",
+      "Bash(uv run:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_close",
+      "mcp__playwright__browser_run_code",
+      "Bash(pkill:*)",
+      "Bash(ls:*)",
+      "WebSearch"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "playwright"
+  ],
+  "disabledMcpjsonServers": [
+    "context7"
+  ]
+}
