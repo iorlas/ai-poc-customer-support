@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 from chonkie import TokenChunker
@@ -8,6 +9,21 @@ from src.vector_store import get_chroma_client, get_collection
 
 setup_logging()
 logger = get_logger(__name__)
+
+# Pattern to extract URL from HTML comment: <!-- Source: URL -->
+SOURCE_URL_PATTERN = re.compile(r"<!--\s*Source:\s*(https?://[^\s>]+)\s*-->")
+
+
+def extract_source_url(content: str) -> str:
+    """Extract source URL from document content.
+
+    Looks for HTML comment in format: <!-- Source: https://... -->
+
+    Returns:
+        The extracted URL or empty string if not found.
+    """
+    match = SOURCE_URL_PATTERN.search(content)
+    return match.group(1) if match else ""
 
 
 def index_documents(documents_dir: str = "./documents") -> None:
@@ -37,12 +53,19 @@ def index_documents(documents_dir: str = "./documents") -> None:
         logger.info("Processing document", file=str(doc_file))
 
         text_content = load_document(str(doc_file))
+        source_url = extract_source_url(text_content)
         chunks = chunker.chunk(text_content)
 
         chunk_ids = [f"{doc_file.name}_chunk_{i}" for i in range(len(chunks))]
         chunk_texts = [chunk.text for chunk in chunks]
         chunk_metadatas = [
-            {"source": doc_file.name, "start_index": chunk.start_index, "token_count": chunk.token_count} for chunk in chunks
+            {
+                "source": doc_file.name,
+                "url": source_url,
+                "start_index": chunk.start_index,
+                "token_count": chunk.token_count,
+            }
+            for chunk in chunks
         ]
 
         collection.add(ids=chunk_ids, documents=chunk_texts, metadatas=chunk_metadatas)

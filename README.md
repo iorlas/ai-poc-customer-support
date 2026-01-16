@@ -67,3 +67,11 @@ src/
 ## License
 
 MIT
+
+
+      ctx.deps.state.selected_flight = ...  # State access via RunContext
+
+  Test Bookings:
+  - ABC123 / SMITH → IST→AYT (Economy)
+  - XYZ789 / DOE → SAW→ESB (Basic)
+  - DEF456 / JOHNSON → IST→AYT (Premium, no change fee)
